@@ -1,5 +1,3 @@
-https://github.com/LautyDuf/TP-Final-Algoritmo-Y-Estructuras-de-Datos.git
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
