@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+namespace Trabajo_Practico_Integrador
+{
 public class Estrategia
 {
 
@@ -263,5 +269,6 @@ resultado += "Nivel: "+ Nivel +", Nodo: "+ heap.getElementos()[i].ToString() +"\
 }
 
 return resultado;
+}
 }
 }
