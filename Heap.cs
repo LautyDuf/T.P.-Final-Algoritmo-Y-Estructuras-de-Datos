@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+
+namespace Trabajo_Practico_Integrador
+{
 public class Heap
 {
 private List<Dato> elementos;
@@ -119,5 +125,6 @@ elementos[j] = aux;
 public List<Dato> getElementos()
 {
 return elementos;
-
-}}
+}
+}
+}
