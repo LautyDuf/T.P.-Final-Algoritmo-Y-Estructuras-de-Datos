@@ -20,3 +20,4 @@ public override string ToString()
 return Texto + " | " + Ocurrencias;
 }
 }
+}
