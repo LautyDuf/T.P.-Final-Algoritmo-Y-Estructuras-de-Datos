@@ -15,16 +15,16 @@ namespace tpfinal
 
             for (i = 0; i < datos.Count; i++)
             {
-                string textoTemp = datos[i];
+                string texto = datos[i];
 
-                if (textoTemp == "")
+                if (texto == "")
                     continue;
 
                 bool existe = false;
 
                 for (j = 0; j < palabras.Count; j++)
                 {
-                    if (palabras[j] == textoTemp)
+                    if (palabras[j] == texto)
                     {
                         cantidad[j]++;
                         existe = true;
@@ -33,12 +33,12 @@ namespace tpfinal
 
                 if (existe == false)
                 {
-                    palabras.Add(textoTemp);
+                    palabras.Add(texto);
                     cantidad.Add(1);
                 }
             }
 
-            Heap heap = new Heap(true); 
+            Heap heap = new Heap(true);
 
             for (i = 0; i < palabras.Count; i++)
             {
@@ -66,48 +66,25 @@ namespace tpfinal
             }
         }
 
-        // 2. ORDENAMIENTO BURBUJA 
-        public void BuscarConOtro(List<string> datos, int cantidad, List<Dato> collected)
+        // 2. ORDENAMIENTO BURBUJA
+        public void BuscarConOrden(List<string> datos, int cantidad, List<Dato> collected)
         {
             collected.Clear();
 
             if (cantidad <= 0)
                 return;
 
-            // Recolectamos primero las palabras únicas y sus conteos
+            Heap heap = ConstruirHeap(datos);
+
             List<Dato> lista = new List<Dato>();
-            List<string> palabras = new List<string>();
-            List<int> cantidadOcurrencias = new List<int>();
 
-            for (int k = 0; k < datos.Count; k++)
+            while (!heap.esVacia())
             {
-                string txt = datos[k];
-                if (txt == "") continue;
-
-                bool existe = false;
-                for (int m = 0; m < palabras.Count; m++)
-                {
-                    if (palabras[m] == txt)
-                    {
-                        cantidadOcurrencias[m]++;
-                        existe = true;
-                    }
-                }
-
-                if (!existe)
-                {
-                    palabras.Add(txt);
-                    cantidadOcurrencias.Add(1);
-                }
+                lista.Add(heap.eliminar());
             }
 
-            for (int k = 0; k < palabras.Count; k++)
-            {
-                lista.Add(new Dato(cantidadOcurrencias[k], palabras[k]));
-            }
-
-            // Aplicamos Burbuja puro sobre la lista (de mayor a menor)
             int i, j;
+
             for (i = 0; i < lista.Count - 1; i++)
             {
                 for (j = 0; j < lista.Count - i - 1; j++)
@@ -121,7 +98,6 @@ namespace tpfinal
                 }
             }
 
-            // Agregamos al resultado la cantidad solicitada
             for (i = 0; i < cantidad && i < lista.Count; i++)
             {
                 collected.Add(lista[i]);
@@ -138,10 +114,10 @@ namespace tpfinal
 
             List<Dato> c2 = new List<Dato>();
             Stopwatch t2 = Stopwatch.StartNew();
-            BuscarConOtro(datos, 5, c2);
+            BuscarConOrden(datos, 5, c2);
             t2.Stop();
 
-            return "Heap: " + t1.ElapsedMilliseconds + " ms | Orden alternativo: " + t2.ElapsedMilliseconds + " ms";
+            return "Heap: " + t1.ElapsedMilliseconds + " ms | Orden: " + t2.ElapsedMilliseconds + " ms";
         }
 
         // 4. CAMINO IZQUIERDO
@@ -175,7 +151,7 @@ namespace tpfinal
                 int nivel = (int)Math.Log(i + 1, 2);
 
                 resultado = resultado + "Nivel " + nivel + " -> " +
-                            heap.GetElementos()[i].ToString() + "\n";
+                            heap.GetElementos()[i] + "\n";
             }
 
             return resultado;
