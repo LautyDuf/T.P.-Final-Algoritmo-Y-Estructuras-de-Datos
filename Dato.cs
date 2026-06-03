@@ -15,7 +15,7 @@ namespace tpfinal
 
         public override string ToString()
         {
-            return texto + " , " + ocurrencia;
+            return texto + " | " + ocurrencia;
         }
     }
 }
