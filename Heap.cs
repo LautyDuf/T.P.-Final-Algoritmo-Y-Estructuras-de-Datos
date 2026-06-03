@@ -1,130 +1,126 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
-namespace Trabajo_Practico_Integrador
+namespace tpfinal
 {
-public class Heap
-{
-private List<Dato> elementos;
-private bool esMaxHeap;
-  
-public Heap(bool esMaxHeap)
-{
-this.elementos = new List<Dato>();
-this.esMaxHeap = esMaxHeap;
-}
+    public class Heap
+    {
+        private List<Dato> elementos;
+        private bool esMaxHeap;
 
-public bool esVacia()
-{
-return elementos.Count == 0;
-}
+        public Heap(bool esMaxHeap)
+        {
+            this.esMaxHeap = esMaxHeap;
+            elementos = new List<Dato>();
+        }
 
-public Dato tope()
-{
-if (esVacia()) return null;
-return elementos[0];
-}
+        public bool esVacia()
+        {
+            return elementos.Count == 0;
+        }
 
-public bool agregar(Dato elem)
-{
-if (elem == null) return false;
-elementos.Add(elem);
-heapifyUp(elementos.Count - 1);
-return true;
-}
+        public Dato tope()
+        {
+            if (esVacia())
+                return null;
 
-public Dato eliminar()
-{
-if (esVacia()) return null;
-Dato eliminado = elementos[0];
-int ultimo = elementos.Count - 1;
-elementos[0] = elementos[ultimo];
-elementos.RemoveAt(ultimo);
-  
-if (!esVacia())
-heapifyDown(0);
-return eliminado;
-}
-  
-//HEAPIFY UP
-private void heapifyUp(int indice)
-{
-while (indice > 0)
-{
-int padre = (indice - 1) / 2;
-bool condicion;
+            return elementos[0];
+        }
 
-  if (esMaxHeap)
-condicion = elementos[indice].Ocurrencias > elementos[padre].Ocurrencias;
+        public bool agregar(Dato elem)
+        {
+            if (elem == null)
+                return false;
 
-  else
-condicion = elementos[indice].Ocurrencias < elementos[padre].Ocurrencias;
-  
-if (!condicion) break;
-swap(indice, padre);
-indice = padre;
-}
-}
+            elementos.Add(elem);
+            heapifyUp(elementos.Count - 1);
+            return true;
+        }
 
-//HEAPIFY DOWN
-private void heapifyDown(int indice)
-{
-int n = elementos.Count;
-while (true)
-{
-int hijoIzq = 2 * indice + 1;
-int hijoDer = 2 * indice + 2;
-int candidato = indice;
+        public Dato eliminar()
+        {
+            if (esVacia())
+                return null;
 
-//HIJO IZQUIERDO
-if (hijoIzq < n)
-{
-if (esMaxHeap)
-{
-if (elementos[hijoIzq].Ocurrencias > elementos[candidato].Ocurrencias)
-candidato = hijoIzq;
-}
-  
-else
-{
-if (elementos[hijoIzq].Ocurrencias < elementos[candidato].Ocurrencias)
-candidato = hijoIzq;
-}
-}
+            Dato eliminado = elementos[0];
 
-//HIJO DERECHO
+            int ultimo = elementos.Count - 1;
+            elementos[0] = elementos[ultimo];
+            elementos.RemoveAt(ultimo);
 
-if (hijoDer < n)
-{
-if (esMaxHeap)
-{
-if (elementos[hijoDer].Ocurrencias > elementos[candidato].Ocurrencias)
-candidato = hijoDer;
-}
-else
-{
-if (elementos[hijoDer].Ocurrencias < elementos[candidato].Ocurrencias)
-candidato = hijoDer;
-}
-}
-if (candidato == indice)
-break;
-swap(indice, candidato);
-indice = candidato;
-}
-}
+            if (!esVacia())
+                heapifyDown(0);
 
-private void swap(int i, int j)
-{
-Dato aux = elementos[i];
-elementos[i] = elementos[j];
-elementos[j] = aux;
-}
+            return eliminado;
+        }
 
-public List<Dato> getElementos()
-{
-return elementos;
-}
-}
+        private void heapifyUp(int i)
+        {
+            while (i > 0)
+            {
+                int padre = (i - 1) / 2;
+
+                bool condicion = false;
+
+                // Compara usando la variable 'ocurrencia' en minúscula
+                if (esMaxHeap)
+                {
+                    if (elementos[i].ocurrencia > elementos[padre].ocurrencia)
+                        condicion = true;
+                }
+                else
+                {
+                    if (elementos[i].ocurrencia < elementos[padre].ocurrencia)
+                        condicion = true;
+                }
+
+                if (!condicion)
+                    break;
+
+                Dato aux = elementos[i];
+                elementos[i] = elementos[padre];
+                elementos[padre] = aux;
+
+                i = padre;
+            }
+        }
+
+        private void heapifyDown(int i)
+        {
+            int n = elementos.Count;
+
+            while (true)
+            {
+                int izq = 2 * i + 1;
+                int der = 2 * i + 2;
+                int candidato = i;
+
+                if (izq < n)
+                {
+                    if (elementos[izq].ocurrencia > elementos[candidato].ocurrencia)
+                        candidato = izq;
+                }
+
+                if (der < n)
+                {
+                    if (elementos[der].ocurrencia > elementos[candidato].ocurrencia)
+                        candidato = der;
+                }
+
+                if (candidato == i)
+                    break;
+
+                Dato aux = elementos[i];
+                elementos[i] = elementos[candidato];
+                elementos[candidato] = aux;
+
+                i = candidato;
+            }
+        }
+
+        public List<Dato> GetElementos()
+        {
+            return elementos;
+        }
+    }
 }
