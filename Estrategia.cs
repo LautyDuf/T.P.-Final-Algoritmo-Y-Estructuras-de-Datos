@@ -6,7 +6,7 @@ namespace tpfinal
 {
     public class Estrategia
     {
-        // Función auxiliar privada para recuento y armado del árbol
+        // Funcion auxiliar privada para recuento y armado del arbol
         private Heap ConstruirHeap(List<string> datos)
         {
             List<string> palabras = new List<string>();
@@ -111,7 +111,7 @@ namespace tpfinal
                 }
             }
 
-            // Extracción
+            // Extraccion
             for (int i = 0; i < cantidad && i < lista.Count; i++)
             {
                 collected.Add(lista[i]);
