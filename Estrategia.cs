@@ -6,32 +6,29 @@ namespace tpfinal
 {
     public class Estrategia
     {
+        // Función auxiliar privada para recuento y armado del árbol
         private Heap ConstruirHeap(List<string> datos)
         {
             List<string> palabras = new List<string>();
             List<int> cantidad = new List<int>();
 
-            int i, j;
-
-            for (i = 0; i < datos.Count; i++)
+            for (int i = 0; i < datos.Count; i++)
             {
                 string texto = datos[i];
-
-                if (texto == "")
-                    continue;
+                if (texto == "") continue;
 
                 bool existe = false;
-
-                for (j = 0; j < palabras.Count; j++)
+                for (int j = 0; j < palabras.Count; j++)
                 {
                     if (palabras[j] == texto)
                     {
                         cantidad[j]++;
                         existe = true;
+                        break;
                     }
                 }
 
-                if (existe == false)
+                if (!existe)
                 {
                     palabras.Add(texto);
                     cantidad.Add(1);
@@ -39,55 +36,71 @@ namespace tpfinal
             }
 
             Heap heap = new Heap(true);
-
-            for (i = 0; i < palabras.Count; i++)
+            for (int i = 0; i < palabras.Count; i++)
             {
-                Dato d = new Dato(cantidad[i], palabras[i]);
-                heap.agregar(d);
+                heap.agregar(new Dato(cantidad[i], palabras[i]));
             }
 
             return heap;
         }
 
-        // 1. HEAP
+        // 1. BUSCAR CON HEAP
         public void BuscarConHeap(List<string> datos, int cantidad, List<Dato> collected)
         {
             collected.Clear();
-
-            if (cantidad <= 0)
-                return;
+            if (cantidad <= 0) return;
 
             Heap heap = ConstruirHeap(datos);
 
-            int i;
-            for (i = 0; i < cantidad && !heap.esVacia(); i++)
+            for (int i = 0; i < cantidad && !heap.esVacia(); i++)
             {
                 collected.Add(heap.eliminar());
             }
         }
 
-        // 2. ORDENAMIENTO BURBUJA
+        // 2. BUSCAR CON ORDEN 
         public void BuscarConOrden(List<string> datos, int cantidad, List<Dato> collected)
         {
             collected.Clear();
-
-            if (cantidad <= 0)
-                return;
-
-            Heap heap = ConstruirHeap(datos);
+            if (cantidad <= 0) return;
 
             List<Dato> lista = new List<Dato>();
+            List<string> palabras = new List<string>();
+            List<int> cantidades = new List<int>();
 
-            while (!heap.esVacia())
+            // Conteo manual
+            for (int i = 0; i < datos.Count; i++)
             {
-                lista.Add(heap.eliminar());
+                string txt = datos[i];
+                if (txt == "") continue;
+
+                bool existe = false;
+                for (int j = 0; j < palabras.Count; j++)
+                {
+                    if (palabras[j] == txt)
+                    {
+                        cantidades[j]++;
+                        existe = true;
+                        break;
+                    }
+                }
+
+                if (!existe)
+                {
+                    palabras.Add(txt);
+                    cantidades.Add(1);
+                }
             }
 
-            int i, j;
-
-            for (i = 0; i < lista.Count - 1; i++)
+            for (int i = 0; i < palabras.Count; i++)
             {
-                for (j = 0; j < lista.Count - i - 1; j++)
+                lista.Add(new Dato(cantidades[i], palabras[i]));
+            }
+
+            // Ordenamiento Burbuja (Mayor a Menor)
+            for (int i = 0; i < lista.Count - 1; i++)
+            {
+                for (int j = 0; j < lista.Count - i - 1; j++)
                 {
                     if (lista[j].ocurrencia < lista[j + 1].ocurrencia)
                     {
@@ -98,13 +111,14 @@ namespace tpfinal
                 }
             }
 
-            for (i = 0; i < cantidad && i < lista.Count; i++)
+            // Extracción
+            for (int i = 0; i < cantidad && i < lista.Count; i++)
             {
                 collected.Add(lista[i]);
             }
         }
 
-        // 3. TIEMPOS
+        // 3. CONSULTA 1 (Tiempos)
         public string Consulta1(List<string> datos)
         {
             List<Dato> c1 = new List<Dato>();
@@ -120,7 +134,7 @@ namespace tpfinal
             return "Heap: " + t1.ElapsedMilliseconds + " ms | Orden: " + t2.ElapsedMilliseconds + " ms";
         }
 
-        // 4. CAMINO IZQUIERDO
+        // 4. CONSULTA 2 (Camino Izquierdo)
         public string Consulta2(List<string> datos)
         {
             Heap heap = ConstruirHeap(datos);
@@ -131,27 +145,23 @@ namespace tpfinal
 
             while (i < arr.Count)
             {
-                resultado = resultado + arr[i].ToString() + "\n";
+                resultado += arr[i].ToString() + "\n";
                 i = 2 * i + 1;
             }
 
             return resultado;
         }
 
-        // 5. NIVELES
+        // 5. CONSULTA 3 (Niveles)
         public string Consulta3(List<string> datos)
         {
             Heap heap = ConstruirHeap(datos);
-
             string resultado = "";
-            int i;
 
-            for (i = 0; i < heap.GetElementos().Count; i++)
+            for (int i = 0; i < heap.GetElementos().Count; i++)
             {
                 int nivel = (int)Math.Log(i + 1, 2);
-
-                resultado = resultado + "Nivel " + nivel + " -> " +
-                            heap.GetElementos()[i] + "\n";
+                resultado += "Nivel " + nivel + " -> " + heap.GetElementos()[i].ToString() + "\n";
             }
 
             return resultado;
