@@ -2,273 +2,183 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Trabajo_Practico_Integrador
+namespace tpfinal
 {
-public class Estrategia
-{
+    public class Estrategia
+    {
+        private Heap ConstruirHeap(List<string> datos)
+        {
+            List<string> palabras = new List<string>();
+            List<int> cantidad = new List<int>();
 
-  //Base
-private List<Dato> listaDatos = new List<Dato>();//Lista auxiliar, mejor dicho una lista temporal
+            int i, j;
 
-//Constructor
-public Estrategia()
-{
-}
+            for (i = 0; i < datos.Count; i++)
+            {
+                string textoTemp = datos[i];
 
-//METODOS
-/*1. BuscarConHeap(List<string> datos, int cantidad, List<Dato> collected): Retorna en la
-variable collected los primeros elementos con mayor número de ocurrencias de la lista datos
-utilizando una Heap como estructura de datos soporte. El número de elementos a retornar es
-indicado por el parámetro cantidad.*/
+                if (textoTemp == "")
+                    continue;
 
-public void BuscarConHeap( List<string> datos, int cantidad, List<Dato> collected)
-{
-listaDatos.Clear();
-collected.Clear();//Para no acomular datos viejos
+                bool existe = false;
 
-foreach ( string texto in datos )
-{
-bool encontrado = false;
-  
-if ( texto != "" )
-{
-//Contar cantidad de cada uno
-foreach ( Dato a in listaDatos)
-{
+                for (j = 0; j < palabras.Count; j++)
+                {
+                    if (palabras[j] == textoTemp)
+                    {
+                        cantidad[j]++;
+                        existe = true;
+                    }
+                }
 
-if ( a.Texto == texto )
-{
-a.Ocurrencias++;
-encontrado = true;
-break;
-}
-}
+                if (existe == false)
+                {
+                    palabras.Add(textoTemp);
+                    cantidad.Add(1);
+                }
+            }
 
-if ( !encontrado)
-{
-listaDatos.Add(new Dato(1, texto));
-}
-}
-}
+            Heap heap = new Heap(true); 
 
-//Creacion de HEAP
+            for (i = 0; i < palabras.Count; i++)
+            {
+                Dato d = new Dato(cantidad[i], palabras[i]);
+                heap.agregar(d);
+            }
 
-Heap heap = new Heap(true);//MAX HEAP
+            return heap;
+        }
 
-foreach ( Dato a in listaDatos )
-{
-heap.agregar(a);//Ordena automatiamente heap
-}
+        // 1. HEAP
+        public void BuscarConHeap(List<string> datos, int cantidad, List<Dato> collected)
+        {
+            collected.Clear();
 
-if ( cantidad <= 0 )
-{
-return;
-}
+            if (cantidad <= 0)
+                return;
 
-listaDatos.Clear();
+            Heap heap = ConstruirHeap(datos);
 
-for ( int i = 0; i< cantidad; i++ )
-{
-if ( ! heap.esVacia() )
-{
-collected.Add(heap.eliminar());
-}
-}
-}
+            int i;
+            for (i = 0; i < cantidad && !heap.esVacia(); i++)
+            {
+                collected.Add(heap.eliminar());
+            }
+        }
 
-/*2. BuscarConOrden(List<string> datos, int cantidad, List<Dato> collected): Tiene la misma
-funcionalidad del método BuscarConHeap() pero debe implementarse utilizando un método
-ordenamiento de los vistos en clase el que sea de su preferencia.*/
+        // 2. ORDENAMIENTO BURBUJA 
+        public void BuscarConOtro(List<string> datos, int cantidad, List<Dato> collected)
+        {
+            collected.Clear();
 
-//Ordenamiento: heap sort
+            if (cantidad <= 0)
+                return;
 
-public void BuscarConOrden( List<string> datos, int cantidad, List<Dato> collected)
-{
-listaDatos.Clear();
-collected.Clear();
+            // Recolectamos primero las palabras únicas y sus conteos
+            List<Dato> lista = new List<Dato>();
+            List<string> palabras = new List<string>();
+            List<int> cantidadOcurrencias = new List<int>();
 
-foreach ( string texto in datos )
-{
-bool encontrado = false;
-  
-if ( texto != "" )
-{
-//Contar cantidad de cada uno
-foreach ( Dato a in listaDatos)
-{
+            for (int k = 0; k < datos.Count; k++)
+            {
+                string txt = datos[k];
+                if (txt == "") continue;
 
-if ( a.Texto == texto )
-{
-a.Ocurrencias++;
-encontrado = true;
-break;
-}
-}
+                bool existe = false;
+                for (int m = 0; m < palabras.Count; m++)
+                {
+                    if (palabras[m] == txt)
+                    {
+                        cantidadOcurrencias[m]++;
+                        existe = true;
+                    }
+                }
 
-if ( !encontrado)
-{
-listaDatos.Add(new Dato(1, texto));
-}
-}
-}
-  
-//Creacion de HEAP
+                if (!existe)
+                {
+                    palabras.Add(txt);
+                    cantidadOcurrencias.Add(1);
+                }
+            }
 
-Heap heap = new Heap(true);//MAX HEAP
+            for (int k = 0; k < palabras.Count; k++)
+            {
+                lista.Add(new Dato(cantidadOcurrencias[k], palabras[k]));
+            }
 
-foreach ( Dato a in listaDatos )
-{
-heap.agregar(a);//Ordena automatiamente heap
-}
+            // Aplicamos Burbuja puro sobre la lista (de mayor a menor)
+            int i, j;
+            for (i = 0; i < lista.Count - 1; i++)
+            {
+                for (j = 0; j < lista.Count - i - 1; j++)
+                {
+                    if (lista[j].ocurrencia < lista[j + 1].ocurrencia)
+                    {
+                        Dato aux = lista[j];
+                        lista[j] = lista[j + 1];
+                        lista[j + 1] = aux;
+                    }
+                }
+            }
 
-if ( cantidad <= 0 )
-{
-return;
-}
+            // Agregamos al resultado la cantidad solicitada
+            for (i = 0; i < cantidad && i < lista.Count; i++)
+            {
+                collected.Add(lista[i]);
+            }
+        }
 
-listaDatos.Clear();
+        // 3. TIEMPOS
+        public string Consulta1(List<string> datos)
+        {
+            List<Dato> c1 = new List<Dato>();
+            Stopwatch t1 = Stopwatch.StartNew();
+            BuscarConHeap(datos, 5, c1);
+            t1.Stop();
 
-//Lista auxiliar
-List<Dato> ordenados = new List<Dato>();
+            List<Dato> c2 = new List<Dato>();
+            Stopwatch t2 = Stopwatch.StartNew();
+            BuscarConOtro(datos, 5, c2);
+            t2.Stop();
 
-while ( !heap.esVacia() )
-{
-ordenados.Add(heap.eliminar());//Lo saca y lo ordena de mayor a menor
-}
+            return "Heap: " + t1.ElapsedMilliseconds + " ms | Orden alternativo: " + t2.ElapsedMilliseconds + " ms";
+        }
 
-//Aca es donde cambia la estructura ya que extrae los primeros mas grandes
-for ( int i = 0; i < cantidad && i < ordenados.Count; i++ )
-{
-collected.Add(ordenados[i]);
-}
-}
-  
-/*3. Consulta1 (List<string> datos): Retorna un texto con los tiempos que insumen los
-métodos BuscarConHeap() y BuscarConOrden() en realizar la búsqueda de los 5 elementos de
-con mayor cantidad de ocurrencias.*/
+        // 4. CAMINO IZQUIERDO
+        public string Consulta2(List<string> datos)
+        {
+            Heap heap = ConstruirHeap(datos);
+            List<Dato> arr = heap.GetElementos();
 
-public string Consulta1 ( List<string> datos) //No vodi porque va a retornar
-{
-List<Dato> c1 = new List<Dato>();//En lugar de instanciar objeto
-Stopwatch reloj1 = new Stopwatch();
-reloj1.Start();
-BuscarConHeap(datos, 5, c1);
-reloj1.Stop();
-List<Dato> c2 = new List<Dato>();
-Stopwatch reloj2 = new Stopwatch();
-reloj2.Start();
-BuscarConOrden(datos, 5, c2);
-reloj2.Stop();
+            string resultado = "";
+            int i = 0;
 
-return "Heap: "+ reloj1.ElapsedMilliseconds + " ms, Orden: "+ reloj2.ElapsedMilliseconds + " ms";
-}
+            while (i < arr.Count)
+            {
+                resultado = resultado + arr[i].ToString() + "\n";
+                i = 2 * i + 1;
+            }
 
-/*4. Consulta2 (List<string> datos): Retorna un texto con el camino a la hoja más izquierda
-de la Heap que se construye a partir de los datos de entrada cuando se utiliza el método
-BuscarConHeap().*/
+            return resultado;
+        }
 
-public string Consulta2 ( List<string> datos)
-{
-listaDatos.Clear();
+        // 5. NIVELES
+        public string Consulta3(List<string> datos)
+        {
+            Heap heap = ConstruirHeap(datos);
 
-foreach ( string texto in datos )
-{
-bool encontrado = false;
+            string resultado = "";
+            int i;
 
-if ( texto != "" )
-{
-//Contar cantidad de cada uno
-foreach ( Dato a in listaDatos)
-{
-if ( a.Texto == texto )
-{
-a.Ocurrencias++;
-encontrado = true;
-break;
-}
-}
-if ( !encontrado)
-{
-listaDatos.Add(new Dato(1, texto));
-}
-}
-}
-  
-//Creacion de HEAP
-Heap heap = new Heap(true);//MAX HEAP
+            for (i = 0; i < heap.GetElementos().Count; i++)
+            {
+                int nivel = (int)Math.Log(i + 1, 2);
 
-foreach ( Dato a in listaDatos )
-{
-heap.agregar(a);//Ordena automatiamente heap
-}
+                resultado = resultado + "Nivel " + nivel + " -> " +
+                            heap.GetElementos()[i].ToString() + "\n";
+            }
 
-listaDatos.Clear();
-
-//PARTE nueva
-int indice = 0;
-
-string resultado = "";
-
-while ( indice < heap.getElementos().Count )
-{
-resultado += heap.getElementos()[indice].ToString() + "\n";
-indice = (2*indice)+1;//Recorrer por izquierda es
-}
-
-return resultado;
-}
-
-/*5. Consulta3 (List<string> datos): Retorna un texto que contiene los datos de la Heap que
-se construye a partir de los datos de entrada cuando se utiliza el método BuscarConHeap(),
-explicitando en el texto resultado los niveles en los que se encuentran ubicados cada uno de
-los datos.*/
-
-public string Consulta3 ( List<string> datos)
-{
-listaDatos.Clear();
-
-foreach ( string texto in datos )
-{
-bool encontrado = false;
-
-if ( texto != "" )
-{
-//Contar cantidad de cada uno
-foreach ( Dato a in listaDatos)
-{
-if ( a.Texto == texto )
-{
-a.Ocurrencias++;
-encontrado = true;
-break;
-}
-}
-if ( !encontrado)
-{
-listaDatos.Add(new Dato(1, texto));
-}
-}
-}
-  
-//Creacion de HEAP
-Heap heap = new Heap(true);//MAX HEAP
-
-foreach ( Dato a in listaDatos )
-{
-heap.agregar(a);//Ordena automatiamente heap
-}
-
-listaDatos.Clear();
-//Parte Nueva
-string resultado = "";
-
-for ( int i = 0; i< heap.getElementos().Count ; i++ )
-{//Recorrer por izquierda es
-int Nivel = (int)Math.Floor(Math.Log(i + 1, 2));//El 2 es para que me devuelva de base el log2
-resultado += "Nivel: "+ Nivel +", Nodo: "+ heap.getElementos()[i].ToString() +"\n"; // el \n es para salto de linea
-}
-
-return resultado;
-}
-}
+            return resultado;
+        }
+    }
 }
