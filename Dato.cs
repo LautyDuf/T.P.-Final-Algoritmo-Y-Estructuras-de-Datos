@@ -1,23 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 
-namespace Trabajo_Practico_Integrador
+namespace tpfinal
 {
-public class Dato
-{
+    public class Dato
+    {
+        public int ocurrencia;
+        public string texto;
 
-public int Ocurrencias { get; set; }
-public string Texto { get; set; }
-public Dato(int ocurrencias, string texto)
-{
-Ocurrencias = ocurrencias;
-Texto = texto;
-}
+        public Dato(int ocurrencia, string texto)
+        {
+            this.ocurrencia = ocurrencia;
+            this.texto = texto;
+        }
 
-public override string ToString()
-{
-return Texto + " | " + Ocurrencias;
-}
-}
+        public override string ToString()
+        {
+            return texto + " , " + ocurrencia;
+        }
+    }
 }
